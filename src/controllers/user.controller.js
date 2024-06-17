@@ -33,11 +33,13 @@ const getUserById = async (req, res) => {
 // Controlador para criar um novo usuário
 const createUser = async (req, res) => {
   const { nome, email, senha, tipo, token } = req.body;
+  const imagem = req.file ? req.file.buffer : null;
+  
   try {
     // Criptografar a senha
     const hashedPassword = await bcrypt.hash(senha, 10);
 
-    const result = await db.query('INSERT INTO projetolivros.usuario (nome, email, senha, dataregistro, tipo, token) VALUES ($1, $2, $3, now(), $4, $5) RETURNING *', [nome, email, hashedPassword, tipo, token]);
+    const result = await db.query('INSERT INTO projetolivros.usuario (nome, email, senha, dataregistro, tipo, token, imagem) VALUES ($1, $2, $3, now(), $4, $5, $6) RETURNING *', [nome, email, hashedPassword, tipo, token, imagem]);
       
     return successResponse(res, result.rows[0], 'Cadastro realizado com successo', 200);
   } catch (error) {

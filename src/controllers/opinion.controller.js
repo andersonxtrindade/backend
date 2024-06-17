@@ -11,8 +11,14 @@ const createOpinion = async (req, res) => {
     );
     if (select.rows.length === 0) {
         return errorResponse(res, 'Falha no cadastro!', 'Você não é o dono desse livro', 401); 
-    } else if(select.rows.length === 1) {
-        return errorResponse(res, 'Falha no cadastro!', 'Você já deu sua opinião sobre esse livro', 401);
+    } 
+    const selectOpinion = await db.query(
+      "SELECT * FROM projetolivros.opiniao WHERE id_livro = $1;",
+      [id_livro]
+    );
+    
+    if(selectOpinion.rows.length === 1) {
+      return errorResponse(res, 'Falha no cadastro!', 'Você já deu sua opinião sobre esse livro', 401);
     } else {
       const result = await db.query(
         "INSERT INTO projetolivros.opiniao(conteudo, data, id_usuario, id_livro) VALUES ($1, now(), $2, $3) RETURNING *;",
